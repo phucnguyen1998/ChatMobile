@@ -37,7 +37,7 @@ class ChatRoom extends React.Component {
         // get message from sista.api
         callApi(config.GET_MESSAGE + '?from='+config.USER_1+'&to='+config.USER_2+'&type=nomal&pageIndex=1&pageSize=10', 'GET', null).then((res) => {
             const data = res.data.data.map((x,i) => {
-                return {text: x.Body, sender: '', user: x.From._id, displayName: x.From.FirstName}    
+                return {text: x.Body, sender: x.From._id, user: x.To._id, displayName: x.From.FirstName}    
             });
 
             let datachat = [...this.state.logs];
@@ -137,14 +137,16 @@ class ChatRoom extends React.Component {
     _renderChatLine = (item) =>
     {
         //&& item.sender !== this.state.username    
-        if(item.sender && item.sender !== '')
+        if(item.sender && item.sender !== '' && this.state.username !== item.sender)
         {
             return(
-                <ChatLineHolder sender={item.sender} chatContent={item.text} />
+                //you
+                <ChatLineHolder sender={item.displayName} chatContent={item.text} />
             );
         }
 
         return(
+            //me
             <View style={{ alignItems: 'flex-end' }} >
                 <ChatLineHolder sender={item.displayName} chatContent={item.text} />
             </View>
