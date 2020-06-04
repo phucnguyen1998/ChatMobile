@@ -13,9 +13,6 @@ class JoinRoom extends React.Component {
         name : '',
         password: ''
     };
-   
-    UNSAFE_componentWillMount() {
-    };
 
     _onChangeName = (text) =>
         {
@@ -60,6 +57,7 @@ class JoinRoom extends React.Component {
             this.props.navigation.navigate('ChatRoom');
         })
     }
+    
     render() {
         return (
             <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', padding: 10, paddingBottom: 15 }} >

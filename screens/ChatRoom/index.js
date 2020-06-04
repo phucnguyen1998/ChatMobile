@@ -5,6 +5,7 @@ import { ChatLineHolder } from './chatLineHolder';
 import XMPP from 'stanza.io';
 import callApi from './../../utils/API';
 import * as config from './../../utils/constants';
+import _ from 'lodash';
 
 class ChatRoom extends React.Component {
 
@@ -34,14 +35,15 @@ class ChatRoom extends React.Component {
         })
 
         // get message from sista.api
-        callApi(config.GET_MESSAGE + '?from='+config.USER_1+'&to='+config.USER_2+'&type=nomal&pageIndex=1&pageSize=100', 'GET', null).then((res) => {
+        callApi(config.GET_MESSAGE + '?from='+config.USER_1+'&to='+config.USER_2+'&type=nomal&pageIndex=1&pageSize=10', 'GET', null).then((res) => {
             const data = res.data.data.map((x,i) => {
-                return {text: x.Body, sender: x.To._id, user: x.From._id}    
+                return {text: x.Body, sender: '', user: x.From._id, displayName: x.From.FirstName}    
             });
 
             let datachat = [...this.state.logs];
             datachat.push(data)
-            datachat = datachat.flat();
+            datachat = _.flatten(datachat);
+            datachat = _.reverse(datachat);
             console.log('data',datachat);
             
             this.setState({logs: datachat});
@@ -104,38 +106,38 @@ class ChatRoom extends React.Component {
     }
 
     sendChat() {
-        let datachat = [...this.state.logs];
-        
-        datachat.push({
-            text: this.state.text, 
-            user: this.state.username,
-            sender: '',
-            displayName: this.state.displayName,
-        });
-
-        this.state.client.sendMessage({
-            to: config.USER_2+config.HOST,
-            body: this.state.text
-        });
-
-        this.addLog(this.state.text);
-        this.setState({
-            text: "",
-            logs: datachat
-        });
         // API sista -- /api/Dialogue/InsertMessage
-        callApi(config.INSERT_MESSAGE + '?from='+config.USER_1+'&to='+config.USER_2+'&type=nomal&subject=teest&body='+this.state.text, 'POST', null);
+        callApi(config.INSERT_MESSAGE + '?from='+config.USER_1+'&to='+config.USER_2+'&type=nomal&subject=teest&body='+this.state.text, 'POST', null).then((res)=>{
+            let datachat = [...this.state.logs];
+        
+            datachat.push({
+                text: this.state.text, 
+                user: this.state.username,
+                sender: '',
+                displayName: this.state.displayName,
+            });
+
+            this.state.client.sendMessage({
+                to: config.USER_2+config.HOST,
+                body: this.state.text
+            });
+
+            this.addLog(this.state.text);
+            this.setState({
+                text: "",
+                logs: datachat
+            });
+        });
     }
-
-
+    
     logOut = () =>{
         this.props.navigation.goBack();
     }
 
     _renderChatLine = (item) =>
     {
-        
-        if(item.sender && item.sender !== '' && item.sender !== this.state.username )
+        //&& item.sender !== this.state.username    
+        if(item.sender && item.sender !== '')
         {
             return(
                 <ChatLineHolder sender={item.sender} chatContent={item.text} />
@@ -144,13 +146,13 @@ class ChatRoom extends React.Component {
 
         return(
             <View style={{ alignItems: 'flex-end' }} >
-                <ChatLineHolder sender={this.state.displayName} chatContent={item.text} />
+                <ChatLineHolder sender={item.displayName} chatContent={item.text} />
             </View>
         );
     };
 
     render() { 
-        //console.log('log', this.state.logs);
+        console.log('log', this.state.logs);
         
         return (
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-end' }} >
