@@ -1,10 +1,5 @@
 export const HOST = '@172.16.0.175';
 
-export const GET_USER_INFO = 'http://api.sista.vn/api/Shop/ViewShopDetails?shopId=';
-export const INSERT_MESSAGE = 'http://api.sista.vn/api/Dialogue/InsertMessage';
-export const GET_MESSAGE = 'http://api.sista.vn/api/Dialogue/GetDialogue';
-export const LOGIN = 'http://api.sista.vn/api/Login/Login';
-
 export const TRANS_PORT = 'websocket';
 
 export const WSURL = 'ws://172.16.0.175:5280/websocket';
